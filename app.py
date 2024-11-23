@@ -181,5 +181,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Deployment-ready
-    app.run(host="0.0.0.0", port=port, debug=True)  # Debug enabled for development
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
