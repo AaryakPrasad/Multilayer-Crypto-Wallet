@@ -17,7 +17,7 @@ matplotlib.use("Agg")
 app = Flask(__name__)
 
 # Load Pre-trained Model
-model = load_model("model.keras")
+model = load_model(os.path.join(os.path.dirname(__file__), "model.keras"))
 
 
 # Helper Function to Convert Matplotlib Plots to HTML
@@ -30,15 +30,14 @@ def plot_to_html(fig):
     return f"data:image/png;base64,{data}"
 
 
-# Corrected route to be more intuitive
-@app.route("/")
+# Routes
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "POST":
+        stock = request.form.get("stock")
+        no_of_days = int(request.form.get("no_of_days"))
+        return redirect(url_for("predict", stock=stock, no_of_days=no_of_days))
     return render_template("index.html")
-
-
-@app.route("/prediction")
-def prediction():
-    return render_template("prediction.html")
 
 
 @app.route("/signup")
@@ -51,8 +50,13 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/prediction")
+def prediction():
+    return render_template("prediction.html")
+
+
 @app.route("/pricepredict", methods=["GET", "POST"])
-def price():
+def pricepredict():
     if request.method == "POST":
         stock = request.form.get("stock")
         no_of_days = int(request.form.get("no_of_days"))
@@ -177,5 +181,5 @@ def predict():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5000))  # Deployment-ready
+    app.run(host="0.0.0.0", port=port, debug=True)  # Debug enabled for development
